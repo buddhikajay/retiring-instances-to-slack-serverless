@@ -1,0 +1,22 @@
+service: cron
+
+provider:
+  name: aws
+  region: us-west-2
+  runtime: nodejs4.3
+  profile: ${opt:profile}
+  stage: dev
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ec2:DescribeInstanceStatus
+      Resource: "*"
+functions:
+  cron:
+    handler: src/slack.notify
+    events:
+      - http:
+          path: notify
+          method: GET
+      - schedule: rate(10 minutes)
+    memorySize: 128
